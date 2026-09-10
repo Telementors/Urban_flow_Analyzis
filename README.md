@@ -1,6 +1,3 @@
-Here is the updated `README.md` markdown tailored specifically to your project structure (`Urban_Mobility_Analytics`), including your `dashboards/power_bi`, single `Preprocessing_pipeline.ipynb` notebook, and `observability` directory:
-
-```markdown
 # Urban Mobility Analytics — Datathon Challenge
 
 An end-to-end Data Engineering, Machine Learning, and Observability pipeline for processing, cleaning, feature engineering, and visualizing high-volume urban transit flow datasets (~48.6+ million records / 5GB+).

@@ -1,0 +1,10 @@
+services:
+  demand-predictor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: urbanflow_demand_predictor
+    volumes:
+      - ./output:/app/output
+    environment:
+      - PYTHONUNBUFFERED=1

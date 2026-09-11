@@ -1,0 +1,272 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<workbook source-build='2026.2.0' source-platform='win' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <preferences>
+    <preference name='ui.encoding.shelf.height' value='24' />
+    <preference name='ui.shelf.height' value='26' />
+  </preferences>
+  <datasources>
+    <datasource caption='demand_forecast' inline='true' name='federated.demand_forecast' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='demand_forecast' name='textscan.demand_forecast'>
+            <connection class='textscan' directory='.' filename='demand_forecast.csv' password='' port='0' server='' username='' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.demand_forecast' name='demand_forecast.csv' table='[demand_forecast#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+            <column datatype='datetime' name='datetime' ordinal='0' />
+            <column datatype='integer' name='zone' ordinal='1' />
+            <column datatype='real' name='actual_demand' ordinal='2' />
+            <column datatype='real' name='predicted_demand' ordinal='3' />
+            <column datatype='string' name='forecast_type' ordinal='4' />
+            <column datatype='string' name='forecast_horizon' ordinal='5' />
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class='column'>
+            <remote-name>datetime</remote-name>
+            <remote-type>135</remote-type>
+            <local-name>[datetime]</local-name>
+            <parent-name>[demand_forecast.csv]</parent-name>
+            <remote-alias>datetime</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>datetime</local-type>
+            <aggregation>Year</aggregation>
+            <contains-null>false</contains-null>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>zone</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[zone]</local-name>
+            <parent-name>[demand_forecast.csv]</parent-name>
+            <remote-alias>zone</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>false</contains-null>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>actual_demand</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[actual_demand]</local-name>
+            <parent-name>[demand_forecast.csv]</parent-name>
+            <remote-alias>actual_demand</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>predicted_demand</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[predicted_demand]</local-name>
+            <parent-name>[demand_forecast.csv]</parent-name>
+            <remote-alias>predicted_demand</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>false</contains-null>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>forecast_type</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[forecast_type]</local-name>
+            <parent-name>[demand_forecast.csv]</parent-name>
+            <remote-alias>forecast_type</remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>false</contains-null>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>forecast_horizon</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[forecast_horizon]</local-name>
+            <parent-name>[demand_forecast.csv]</parent-name>
+            <remote-alias>forecast_horizon</remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>false</contains-null>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+      <column caption='Zone ID' datatype='integer' name='[zone]' role='dimension' type='ordinal' />
+      <column caption='Timestamp' datatype='datetime' name='[datetime]' role='dimension' type='ordinal' />
+      <column caption='Actual Pickups' datatype='real' name='[actual_demand]' role='measure' type='quantitative' />
+      <column caption='Predicted Demand' datatype='real' name='[predicted_demand]' role='measure' type='quantitative' />
+      <column caption='Forecast Type' datatype='string' name='[forecast_type]' role='dimension' type='nominal' />
+      <column caption='Forecast Horizon' datatype='string' name='[forecast_horizon]' role='dimension' type='nominal' />
+
+      <!-- Calculated Fields -->
+      <column caption='Unified Demand' datatype='real' name='[Calculation_Demand_Value]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='IF [forecast_type] = &quot;Historical&quot; THEN ZN([actual_demand]) ELSE ZN([predicted_demand]) END' />
+      </column>
+      <column caption='Prediction Residual' datatype='real' name='[Calculation_Residual]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='IF [forecast_type] = &quot;Historical&quot; THEN [predicted_demand] - [actual_demand] ELSE NULL END' />
+      </column>
+      <column caption='Hour of Day' datatype='integer' name='[Calculation_Hour_Of_Day]' role='dimension' type='ordinal'>
+        <calculation class='tableau' formula='DATEPART(&quot;hour&quot;, [datetime])' />
+      </column>
+      <column caption='Is Evening Peak' datatype='boolean' name='[Calculation_Is_Peak]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='DATEPART(&quot;hour&quot;, [datetime]) = 18' />
+      </column>
+    </datasource>
+  </datasources>
+
+  <worksheets>
+    <!-- Master Sheet: Historical vs Forecast Demand -->
+    <worksheet name='Historical vs Forecast Demand'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='demand_forecast' name='federated.demand_forecast' />
+          </datasources>
+          <datasource-dependencies datasource='federated.demand_forecast'>
+            <column datatype='datetime' name='[datetime]' role='dimension' type='ordinal' />
+            <column datatype='real' name='[actual_demand]' role='measure' type='quantitative' />
+            <column datatype='real' name='[predicted_demand]' role='measure' type='quantitative' />
+            <column datatype='string' name='[forecast_type]' role='dimension' type='nominal' />
+            <column-instance column='[predicted_demand]' derivation='Avg' name='[avg:predicted_demand:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[datetime]' derivation='Hour' name='[hr:datetime:ok]' pivot='key' type='ordinal' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Line' />
+            <encodings>
+              <color column='[federated.demand_forecast].[forecast_type]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.demand_forecast].[avg:predicted_demand:qk]</rows>
+        <cols>[federated.demand_forecast].[hr:datetime:ok]</cols>
+      </table>
+    </worksheet>
+
+    <!-- Top 10 Demand Zones -->
+    <worksheet name='Top 10 Demand Zones'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='demand_forecast' name='federated.demand_forecast' />
+          </datasources>
+          <datasource-dependencies datasource='federated.demand_forecast'>
+            <column datatype='integer' name='[zone]' role='dimension' type='ordinal' />
+            <column datatype='real' name='[predicted_demand]' role='measure' type='quantitative' />
+            <column-instance column='[predicted_demand]' derivation='Sum' name='[sum:predicted_demand:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Bar' />
+            <encodings>
+              <color column='[federated.demand_forecast].[sum:predicted_demand:qk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.demand_forecast].[zone]</rows>
+        <cols>[federated.demand_forecast].[sum:predicted_demand:qk]</cols>
+      </table>
+    </worksheet>
+
+    <!-- Demand by Hour -->
+    <worksheet name='Demand by Hour'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='demand_forecast' name='federated.demand_forecast' />
+          </datasources>
+          <datasource-dependencies datasource='federated.demand_forecast'>
+            <column datatype='integer' name='[Calculation_Hour_Of_Day]' role='dimension' type='ordinal' />
+            <column datatype='real' name='[predicted_demand]' role='measure' type='quantitative' />
+            <column-instance column='[predicted_demand]' derivation='Avg' name='[avg:predicted_demand:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Area' />
+          </pane>
+        </panes>
+        <rows>[federated.demand_forecast].[avg:predicted_demand:qk]</rows>
+        <cols>[federated.demand_forecast].[Calculation_Hour_Of_Day]</cols>
+      </table>
+    </worksheet>
+  </worksheets>
+
+  <windows>
+    <window class='worksheet' maximized='true' name='Historical vs Forecast Demand'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+        </edge>
+      </cards>
+    </window>
+    <window class='worksheet' name='Top 10 Demand Zones'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+        </edge>
+      </cards>
+    </window>
+    <window class='worksheet' name='Demand by Hour'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+        </edge>
+      </cards>
+    </window>
+  </windows>
+</workbook>

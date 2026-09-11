@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<datasource formatted-name='UrbanFlow Demand Forecast' inline='true' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <connection class='federated'>
+    <named-connections>
+      <named-connection caption='demand_forecast' name='textscan.demand_forecast'>
+        <connection class='textscan' directory='.' filename='demand_forecast.csv' password='' port='0' server='' username='' />
+      </named-connection>
+    </named-connections>
+    <relation connection='textscan.demand_forecast' name='demand_forecast.csv' table='[demand_forecast#csv]' type='table'>
+      <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+        <column datatype='datetime' name='datetime' ordinal='0' />
+        <column datatype='integer' name='zone' ordinal='1' />
+        <column datatype='real' name='actual_demand' ordinal='2' />
+        <column datatype='real' name='predicted_demand' ordinal='3' />
+        <column datatype='string' name='forecast_type' ordinal='4' />
+        <column datatype='string' name='forecast_horizon' ordinal='5' />
+      </columns>
+    </relation>
+  </connection>
+  <aliases enabled='yes' />
+  <column caption='Zone ID' datatype='integer' name='[zone]' role='dimension' type='ordinal' />
+  <column caption='Timestamp' datatype='datetime' name='[datetime]' role='dimension' type='ordinal' />
+  <column caption='Actual Pickups' datatype='real' name='[actual_demand]' role='measure' type='quantitative' />
+  <column caption='Predicted Demand' datatype='real' name='[predicted_demand]' role='measure' type='quantitative' />
+  <column caption='Forecast Type' datatype='string' name='[forecast_type]' role='dimension' type='nominal' />
+  <column caption='Forecast Horizon' datatype='string' name='[forecast_horizon]' role='dimension' type='nominal' />
+  <column caption='Unified Demand' datatype='real' name='[Calculation_Demand_Value]' role='measure' type='quantitative'>
+    <calculation class='tableau' formula='IF [forecast_type] = &quot;Historical&quot; THEN ZN([actual_demand]) ELSE ZN([predicted_demand]) END' />
+  </column>
+  <column caption='Prediction Residual' datatype='real' name='[Calculation_Residual]' role='measure' type='quantitative'>
+    <calculation class='tableau' formula='IF [forecast_type] = &quot;Historical&quot; THEN [predicted_demand] - [actual_demand] ELSE NULL END' />
+  </column>
+  <column caption='Hour of Day' datatype='integer' name='[Calculation_Hour_Of_Day]' role='dimension' type='ordinal'>
+    <calculation class='tableau' formula='DATEPART(&quot;hour&quot;, [datetime])' />
+  </column>
+  <column caption='Is Evening Peak' datatype='boolean' name='[Calculation_Is_Peak]' role='dimension' type='nominal'>
+    <calculation class='tableau' formula='DATEPART(&quot;hour&quot;, [datetime]) = 18' />
+  </column>
+</datasource>

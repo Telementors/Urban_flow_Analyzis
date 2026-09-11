@@ -1,0 +1,80 @@
+# ==============================================================================
+# UrbanFlow AI - Git Ignore Configuration
+# ==============================================================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook & IPython
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+.ipython/
+
+# IDE & Editor Configs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Tableau Temporary & Extract Files
+# Note: Workbook (.twb) and Datasource (.tds) files are tracked!
+*.hyper
+*.tfl
+*.tflx
+*.tmp
+*.twb~
+*CrashReports*
+
+# Docker & Container Artifacts
+*.log
+docker-compose.override.yml
+.docker/
+
+# Scratch & Temporary Investigation Files
+*.ubj
+temp_*.*
+scratch/
+
+# Large Datasets / Model Binaries (Optional)
+# Note: Files under 100MB (demand_forecast.csv ~20MB, hourly_demand_data_sampled.csv ~11.5MB, 
+# xgboost_demand_model.pkl ~6.8MB) can be pushed directly to GitHub.
+# Uncomment the lines below if you prefer to store datasets via Git LFS or external storage:
+# *.parquet
+# *.feather
